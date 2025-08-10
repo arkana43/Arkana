@@ -1,31 +1,480 @@
 
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arkana: Cahaya Terakhir</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: url('bg.jpg') no-repeat center center fixed;
-            background-size: cover;
-            color: white;
-            text-align: center;
-            padding-top: 20%;
-        }
-        h1 {
-            font-size: 3em;
-            text-shadow: 2px 2px 5px black;
-        }
-        p {
-            font-size: 1.2em;
-            text-shadow: 1px 1px 3px black;
-        }
-    </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>Arkana: Cahaya Terakhir — Single-file Demo (Itch-ready)</title>
+<style>
+  :root{
+    --bg1:#061226; --bg2:#12304b; --panel:#0b1a25; --accent:#ffd27f;
+  }
+  html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:#e6f0ff;background:linear-gradient(135deg,var(--bg1),var(--bg2));-webkit-tap-highlight-color:transparent}
+  header{padding:10px 14px;display:flex;align-items:center;gap:12px}
+  header h1{font-size:18px;margin:0}
+  #root{display:flex;gap:14px;padding:12px}
+  #canvas-wrap{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:10px;padding:8px;box-shadow:0 6px 18px rgba(0,0,0,0.6);flex:1;max-width:900px}
+  canvas{display:block;background:#071426;border-radius:6px;width:100%;height:auto;max-width:960px}
+  #sidebar{width:320px;min-width:240px}
+  .panel{background:rgba(255,255,255,0.03);padding:10px;border-radius:8px;margin-bottom:10px;font-size:14px}
+  .row{display:flex;gap:8px;align-items:center}
+  button{background:linear-gradient(180deg,#ffe6a8,#ffd27f);border:0;padding:8px 10px;border-radius:8px;cursor:pointer;font-weight:600}
+  #log{height:120px;overflow:auto;background:#03121a;padding:8px;border-radius:6px;font-size:13px;color:#bcd}
+  #hud{display:flex;gap:8px;align-items:center}
+  .stat{background:rgba(0,0,0,0.2);padding:6px 8px;border-radius:6px}
+  .small{font-size:13px;color:#bcd}
+  /* touch controls */
+  #touch-controls{display:none;position:fixed;left:8px;bottom:8px;z-index:999}
+  #touch-joy{width:120px;height:120px;background:rgba(255,255,255,0.03);border-radius:60px;touch-action:none;display:flex;align-items:center;justify-content:center}
+  #touch-attack{position:fixed;right:12px;bottom:12px;width:86px;height:86px;border-radius:44px;background:linear-gradient(180deg,#ffb3b3,#ff7f7f);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#300}
+  @media (max-width:900px){ #root{flex-direction:column} #sidebar{width:auto} #touch-controls{display:block} }
+  /* custom cursor (we hide native cursor to show our svg cursor) */
+  body.hide-native-cursor{cursor:none}
+  #custom-cursor{position:fixed;left:0;top:0;transform:translate(-50%,-50%);pointer-events:none;z-index:9999;mix-blend-mode:normal}
+  /* harmonize small visuals */
+  .tag{background:#0e2b3a;padding:4px 6px;border-radius:6px;font-weight:700;color:var(--accent);display:inline-block}
+</style>
 </head>
-<body>
-    <h1>Arkana: Cahaya Terakhir</h1>
-    <p>Petualangan dimulai di sini...</p>
+<body class="hide-native-cursor">
+<header>
+  <div style="width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#2a6,#08a);display:flex;align-items:center;justify-content:center;color:#012;font-weight:900">A</div>
+  <div>
+    <h1>Arkana: Cahaya Terakhir — Demo (Itch-ready single file)</h1>
+    <div class="small">Keyboard / Touch — ready. Save as <code>index.html</code>, zip & upload.</div>
+  </div>
+</header>
+
+<div id="root">
+  <div id="canvas-wrap" class="panel">
+    <canvas id="gameCanvas" width="960" height="540" aria-label="Arkana demo"></canvas>
+    <div style="margin-top:8px" class="small">Kontrol: WASD / arrow = gerak · Spasi / Tap Attack · Klik NPC untuk interaksi</div>
+  </div>
+
+  <aside id="sidebar">
+    <div class="panel">
+      <div id="hud" style="justify-content:space-between">
+        <div class="stat">Gold: <span id="gold">50</span></div>
+        <div class="stat">HP: <span id="hp">100</span></div>
+        <div class="stat">Karma: <span id="karma">0</span></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <strong>Oracles / Debug</strong>
+      <div id="log">Demo ready. Use Spawn/Toggle Oracles or attack monsters.</div>
+      <div style="margin-top:8px" class="row">
+        <button id="btnSpawn">Spawn Monster</button>
+        <button id="btnToggleOracles">Enable Oracles</button>
+      </div>
+    </div>
+
+    <div class="panel small">
+      <strong>Upload-ready tips</strong>
+      <ul style="padding-left:16px;margin:6px 0">
+        <li>Zip file must contain <code>index.html</code> in root (not in subfolder)</li>
+        <li>Test with: <code>python3 -m http.server 8000</code> in folder and open <code>http://localhost:8000</code></li>
+        <li>Canvas size responsive; mobile controls available</li>
+      </ul>
+    </div>
+  </aside>
+</div>
+
+<!-- touch controls -->
+<div id="touch-controls">
+  <div id="touch-joy" aria-hidden="true"></div>
+</div>
+<button id="touch-attack" style="display:none">ATT</button>
+
+<!-- custom cursor (3 SVG modes: arrow, hand, sword). We'll position this element on pointer move -->
+<div id="custom-cursor" aria-hidden="true">
+  <!-- arrow -->
+  <svg id="cursor-arrow" width="36" height="36" viewBox="0 0 24 24" style="display:block">
+    <path d="M2 2l10 10" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M13 3l8 4-8 4z" fill="#ffd27f" opacity="0.95"/>
+  </svg>
+  <!-- hand -->
+  <svg id="cursor-hand" width="44" height="44" viewBox="0 0 24 24" style="display:none">
+    <path d="M6 20v-7a2 2 0 0 1 4 0v7" stroke="#fff" stroke-width="1.6" fill="none"></path>
+    <path d="M10 13V6a2 2 0 0 1 4 0v8" stroke="#fff" stroke-width="1.6" fill="none"></path>
+    <path d="M14 8V4a2 2 0 0 1 4 0v8" stroke="#fff" stroke-width="1.6" fill="none"></path>
+    <circle cx="12" cy="18" r="4" fill="#ffd27f" opacity="0.95" />
+  </svg>
+  <!-- sword -->
+  <svg id="cursor-sword" width="48" height="48" viewBox="0 0 24 24" style="display:none">
+    <rect x="11.2" y="1" width="1.6" height="14" fill="#e6eef8" transform="rotate(10 12 8)"></rect>
+    <rect x="9.2" y="15" width="5" height="2" rx="1" fill="#ffd27f"></rect>
+    <rect x="10" y="17.5" width="3" height="4" rx="1" fill="#6c3"></rect>
+  </svg>
+</div>
+
+<script>
+/* ========== BASIC GAME (single-file demo) ========== */
+const cvs = document.getElementById('gameCanvas');
+const ctx = cvs.getContext('2d', {alpha:false});
+let W = cvs.width, H = cvs.height;
+let DPR = 1; // track current device pixel ratio used for canvas
+
+// scale to device pixel ratio for crisper canvas
+function fixDPR(){
+  const dpr = Math.max(1, window.devicePixelRatio || 1);
+  DPR = dpr;
+  const cssW = cvs.clientWidth || W;
+  const cssH = cvs.clientHeight || H;
+  cvs.width = Math.floor(cssW * dpr);
+  cvs.height = Math.floor(cssH * dpr);
+  // use CSS pixel coordinates for drawing by applying DPR transform
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  // update logical drawing size in CSS pixels
+  W = cssW;
+  H = cssH;
+}
+fixDPR();
+window.addEventListener('resize', fixDPR);
+
+// state
+const state = {
+  player: {x:120, y: H - 140, w:34, h:46, speed:160, hp:100, gold:50},
+  npc: {x:440, y: H - 180, w:34, h:46, txt:"Welcome, adventurer."},
+  monsters: [],
+  karma: 0
+};
+
+// UI refs
+const goldEl = document.getElementById('gold');
+const hpEl = document.getElementById('hp');
+const karmaEl = document.getElementById('karma');
+const logEl = document.getElementById('log');
+
+// log helper
+function log(s){ logEl.innerHTML = (new Date()).toLocaleTimeString() + ' — ' + s + '<br>' + logEl.innerHTML; }
+
+// ARK hooks: dispatch events if present
+function pushKarma(delta){
+  state.karma = Math.max(-100, Math.min(100, state.karma + delta));
+  karmaEl.innerText = state.karma;
+  log("Karma: " + state.karma);
+  if(window.ARK && window.ARK.RankKarma && typeof window.ARK.RankKarma.add === 'function'){
+    window.ARK.RankKarma.add(delta);
+  } else {
+    // dispatch synthetic event fallback
+    window.dispatchEvent(new CustomEvent('ARK_KARMA_CHANGED',{detail:{value:state.karma}}));
+  }
+}
+
+// spawn monster
+function spawnMonster(type='goblin'){
+  const m = {x:W-200, y: H - 160, w:40, h:40, hp:80, type:type, speed:40};
+  state.monsters.push(m);
+  log('Spawned '+type);
+}
+
+// simple collision
+function rectsOverlap(a,b){
+  return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+}
+
+/* ========== input ========== */
+const keys = {};
+window.addEventListener('keydown', e=> keys[e.key.toLowerCase()] = true);
+window.addEventListener('keyup', e=> keys[e.key.toLowerCase()] = false);
+
+// touch joystick (simple)
+let touchDir = {x:0,y:0};
+const touchJoy = document.getElementById('touch-joy');
+const touchAttackBtn = document.getElementById('touch-attack');
+
+let activeTouchId = null;
+if('ontouchstart' in window){
+  document.getElementById('touch-controls').style.display='block';
+  touchAttackBtn.style.display='flex';
+}
+touchJoy.addEventListener('touchstart', e=>{
+  const t = e.changedTouches[0];
+  activeTouchId = t.identifier;
+  handleTouchMove(t);
+  e.preventDefault();
+});
+touchJoy.addEventListener('touchmove', e=>{
+  const t = [...e.changedTouches].find(tt=>tt.identifier===activeTouchId) || e.changedTouches[0];
+  handleTouchMove(t);
+  e.preventDefault();
+});
+touchJoy.addEventListener('touchend', e=>{
+  touchDir = {x:0,y:0};
+  activeTouchId = null;
+  e.preventDefault();
+});
+function handleTouchMove(t){
+  const rect = touchJoy.getBoundingClientRect();
+  const cx = rect.left + rect.width/2;
+  const cy = rect.top + rect.height/2;
+  const dx = (t.clientX - cx) / (rect.width/2);
+  const dy = (t.clientY - cy) / (rect.height/2);
+  touchDir.x = Math.max(-1, Math.min(1, dx));
+  touchDir.y = Math.max(-1, Math.min(1, dy));
+}
+
+// attack via touch button
+touchAttackBtn.addEventListener('touchstart', ()=> doAttack());
+touchAttackBtn.addEventListener('mousedown', ()=> doAttack());
+
+/* ========== simple audio: tiny music + sfx via WebAudio ========== */
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+function ensureAudio(){
+  if(!audioCtx) audioCtx = new AudioCtx();
+}
+function playTone(freq, dur=0.12, type='sine', gain=0.06){
+  try{
+    ensureAudio();
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.value = gain;
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+    o.stop(audioCtx.currentTime + dur + 0.02);
+  }catch(e){}
+}
+function playHit(){
+  playTone(220, 0.08, 'square', 0.09);
+}
+function playLoot(){
+  playTone(880, 0.12, 'sine', 0.06);
+}
+
+/* background loop (very light) */
+let musicRunning = false;
+function startMusic(){
+  if(musicRunning) return;
+  ensureAudio();
+  musicRunning = true;
+  // create gentle periodic chord using Oscillators (low CPU)
+  const base = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  base.type = 'sine'; base.frequency.value = 110;
+  g.gain.value = 0.02;
+  base.connect(g); g.connect(audioCtx.destination);
+  base.start();
+  // slowly detune to create wobble
+  base.frequency.setValueAtTime(110, audioCtx.currentTime);
+}
+
+/* ========== game loop ========== */
+let lastTime = performance.now();
+function update(dt){
+  const p = state.player;
+  // input
+  let mx = 0, my = 0;
+  if(keys['arrowleft'] || keys['a']) mx -= 1;
+  if(keys['arrowright'] || keys['d']) mx += 1;
+  if(keys['arrowup'] || keys['w']) my -= 1;
+  if(keys['arrowdown'] || keys['s']) my += 1;
+  // touch
+  mx += touchDir.x; my += touchDir.y;
+  // normalize
+  if(Math.abs(mx) + Math.abs(my) > 1){
+    const mag = Math.hypot(mx,my) || 1;
+    mx /= mag; my /= mag;
+  }
+  p.x += mx * p.speed * dt;
+  p.y += my * p.speed * dt;
+  p.x = Math.max(10, Math.min(W - p.w - 10, p.x));
+  p.y = Math.max(20, Math.min(H - p.h - 70, p.y));
+
+  // monsters: simple AI follow player
+  state.monsters.forEach(m=>{
+    if(m.x > p.x) m.x -= m.speed * dt; else m.x += m.speed * dt;
+    if(m.y > p.y) m.y -= m.speed * dt; else m.y += m.speed * dt;
+    // attack if close
+    if(rectsOverlap(m, p)){
+      p.hp -= 10 * dt;
+      hpEl.innerText = Math.max(0, Math.floor(p.hp));
+      if(p.hp <= 0){
+        log("You died. Resetting HP.");
+        p.hp = 100; p.x = 120; p.y = H - 140;
+        hpEl.innerText = p.hp;
+        state.monsters = [];
+      }
+    }
+  });
+
+  // small passive karma drift
+  if(Math.random() < 0.002){ pushKarma(Math.random() < 0.5 ? 1 : -1); }
+}
+
+function draw(){
+  // clear
+  ctx.fillStyle = '#071426';
+  ctx.fillRect(0,0,W,H);
+
+  // ground
+  ctx.fillStyle = '#0d2a35';
+  ctx.fillRect(0,H-100,W,100);
+
+  // NPC
+  ctx.fillStyle = '#7fe3c9';
+  ctx.fillRect(state.npc.x, state.npc.y, state.npc.w, state.npc.h);
+  ctx.fillStyle = '#001'; ctx.font='13px sans-serif'; ctx.fillText('NPC', state.npc.x, state.npc.y - 8);
+
+  // player
+  ctx.fillStyle = '#87d';
+  ctx.fillRect(state.player.x, state.player.y, state.player.w, state.player.h);
+  ctx.fillStyle='#001'; ctx.fillText('PLAYER', state.player.x, state.player.y-8);
+
+  // monsters
+  state.monsters.forEach(m=>{
+    ctx.fillStyle = m.type==='goblin' ? '#b36' : '#d88';
+    ctx.fillRect(m.x, m.y, m.w, m.h);
+    ctx.fillStyle='#000'; ctx.fillText(m.type.toUpperCase() + ' ' + Math.max(0,Math.floor(m.hp)), m.x, m.y-8);
+  });
+
+  // HUD minimal (draw crosshair)
+  ctx.fillStyle = 'rgba(255,255,255,0.06)';
+  ctx.fillRect(8,8,140,44);
+  ctx.fillStyle='#ffd27f'; ctx.font='14px sans-serif'; ctx.fillText('Arkana Demo', 16, 32);
+}
+
+function gameLoop(ts){
+  const dt = Math.min(0.05, (ts - lastTime) / 1000);
+  lastTime = ts;
+  update(dt);
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+requestAnimationFrame(gameLoop);
+
+/* ========== attack logic ========== */
+function doAttack(){
+  // find nearest monster
+  if(state.monsters.length === 0){ log('No monster to attack'); return; }
+  const m = state.monsters[0];
+  m.hp -= 30;
+  playHit();
+  log('You hit the ' + m.type + ' (-30)');
+  if(m.hp <= 0){
+    log('Monster defeated! +10 gold');
+    state.player.gold += 10; goldEl.innerText = state.player.gold;
+    playLoot();
+    state.monsters.shift();
+    pushKarma(1);
+  } else {
+    pushKarma(-1);
+  }
+}
+
+// keyboard attack (space)
+window.addEventListener('keydown', e=>{
+  if(e.code === 'Space'){ e.preventDefault(); doAttack(); }
+});
+
+// click canvas: attack nearest
+cvs.addEventListener('click', e=>{
+  doAttack();
+});
+
+// spawn button & toggle oracles
+document.getElementById('btnSpawn').addEventListener('click', ()=> spawnMonster());
+document.getElementById('btnToggleOracles').addEventListener('click', ()=>{
+  if(window.ARK){
+    window.ARK.config.oracles_enabled = !window.ARK.config.oracles_enabled;
+    document.getElementById('btnToggleOracles').innerText = window.ARK.config.oracles_enabled ? 'Disable Oracles' : 'Enable Oracles';
+    log('Oracles = ' + window.ARK.config.oracles_enabled);
+  } else {
+    log('ARK core missing - placeholder only.');
+  }
+});
+
+/* ========== simple auto-spawn for demo ========== */
+setInterval(()=>{ if(Math.random() < 0.03) spawnMonster(); }, 1200);
+
+/* ========== expose API for later GDevelop integration ========== */
+window.ArkanaDemo = {
+  spawnMonster, doAttack,
+  addGold: g => { state.player.gold += g; goldEl.innerText = state.player.gold; },
+  setKarma: v => { state.karma = v; karmaEl.innerText = v; }
+};
+
+/* ========== CUSTOM CURSOR LOGIC ========== */
+const cursorRoot = document.getElementById('custom-cursor');
+const cursorArrow = document.getElementById('cursor-arrow');
+const cursorHand = document.getElementById('cursor-hand');
+const cursorSword = document.getElementById('cursor-sword');
+
+let cursorMode = 'arrow'; // 'arrow' | 'hand' | 'sword'
+function setCursor(mode){
+  cursorMode = mode;
+  cursorArrow.style.display = mode === 'arrow' ? 'block' : 'none';
+  cursorHand.style.display = mode === 'hand' ? 'block' : 'none';
+  cursorSword.style.display = mode === 'sword' ? 'block' : 'none';
+}
+
+let lastPointer = {x:0,y:0};
+window.addEventListener('pointermove', e=>{
+  lastPointer.x = e.clientX; lastPointer.y = e.clientY;
+  cursorRoot.style.left = lastPointer.x + 'px';
+  cursorRoot.style.top = lastPointer.y + 'px';
+  // if hovering near NPC -> hand
+  const rect = cvs.getBoundingClientRect();
+  const cx = (lastPointer.x - rect.left) * (cvs.width / rect.width) / DPR;
+  const cy = (lastPointer.y - rect.top) * (cvs.height / rect.height) / DPR;
+  if(cx > state.npc.x - 20 && cx < state.npc.x + state.npc.w + 20 && cy > state.npc.y -20 && cy < state.npc.y + state.npc.h + 20){
+    setCursor('hand');
+  } else {
+    setCursor('arrow');
+  }
+});
+
+// when attacking show sword briefly
+function flashSword(){
+  setCursor('sword');
+  setTimeout(()=> {
+    // return to arrow/hand by position check
+    const rect = cvs.getBoundingClientRect();
+    const cx = (lastPointer.x - rect.left) * (cvs.width / rect.width) / DPR;
+    const cy = (lastPointer.y - rect.top) * (cvs.height / rect.height) / DPR;
+    if(cx > state.npc.x - 20 && cx < state.npc.x + state.npc.w + 20 && cy > state.npc.y -20 && cy < state.npc.y + state.npc.h + 20) setCursor('hand'); else setCursor('arrow');
+  }, 280);
+}
+// tie doAttack to cursor flash
+const originalDoAttack = doAttack;
+doAttack = function(){
+  flashSword(); originalDoAttack(); 
+};
+
+/* ========== ARK core quick placeholder (if not present) ========== */
+if(!window.ARK){
+  window.ARK = {
+    config: { oracles_enabled:false, endpoint:'', version:'0.1.0' },
+    RankKarma: {
+      value: 0,
+      add: function(d){ this.value += d; window.dispatchEvent(new CustomEvent('ARK_KARMA_CHANGED',{detail:{value:this.value}})); },
+      set: function(v){ this.value = v; window.dispatchEvent(new CustomEvent('ARK_KARMA_CHANGED',{detail:{value:this.value}})); }
+    },
+    AutoUpdate: { check: async ()=> ({updateAvailable:false}) }
+  };
+  log('ARK placeholder injected (you can replace with real Oracles integration later).');
+} else {
+  log('ARK core detected and connected.');
+}
+
+/* connect ARK karma event to UI (in case external ARK modifies) */
+window.addEventListener('ARK_KARMA_CHANGED', e=> {
+  state.karma = e.detail.value; karmaEl.innerText = state.karma;
+});
+
+/* activate tiny music only after first user gesture (browser policy) */
+function resumeAudioOnUserGesture(){
+  if(!audioCtx){ try{ ensureAudio(); startMusic(); }catch(e){} }
+  window.removeEventListener('pointerdown', resumeAudioOnUserGesture);
+  window.removeEventListener('keydown', resumeAudioOnUserGesture);
+}
+window.addEventListener('pointerdown', resumeAudioOnUserGesture);
+window.addEventListener('keydown', resumeAudioOnUserGesture);
+
+/* focus hints */
+log('Demo loaded — click canvas / press Space to attack. Touch controls available on mobile.');
+
+</script>
 </body>
 </html>
