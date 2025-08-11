@@ -19,8 +19,28 @@
         <button id="btnPerformance">Performance</button>
         <button id="btnToggleHDR">Toggle HDR</button>
       </div>
-      <div class="help">W/A/S/D: Move • Mouse: Look • Space: Dash</div>
     </div>
+
+    <div class="bars">
+      <div class="bar stamina"><div id="staminaFill" class="fill"></div></div>
+      <div class="bar energy"><div id="energyFill" class="fill"></div></div>
+      <div class="lockon">Lock: <span id="lockLabel">None</span></div>
+    </div>
+
+    <div class="party">
+      <div class="party-slot" data-index="0">1</div>
+      <div class="party-slot" data-index="1">2</div>
+      <div class="party-slot" data-index="2">3</div>
+      <div class="party-slot" data-index="3">4</div>
+    </div>
+
+    <div class="skills">
+      <div class="skill" title="Normal Attack (LMB)">LMB</div>
+      <button id="btnSkillE" class="skill" title="Elemental Skill (E)">E <span id="cdE">0</span></button>
+      <button id="btnBurstQ" class="skill" title="Elemental Burst (Q)">Q <span id="cdQ">0</span></button>
+    </div>
+
+    <div class="help">W/A/S/D: Move • Shift: Sprint • Mouse: Look • LMB: Attack • E: Skill • Q: Burst • Space: Jump/Dash • Tab: Lock‑on • 1‑4: Switch</div>
 
     <!-- Babylon.js CDN -->
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
