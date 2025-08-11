@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>4K ARPG Demo</title>
+    <link rel="preconnect" href="https://cdn.babylonjs.com" />
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <canvas id="renderCanvas"></canvas>
+
+    <div class="hud">
+      <div class="logo">ARPG 4K</div>
+      <div class="stats"><span id="fps">0</span> FPS | <span id="resLabel">-</span></div>
+      <div class="controls">
+        <button id="btnMax">Max Settings</button>
+        <button id="btnBalanced">Balanced</button>
+        <button id="btnPerformance">Performance</button>
+        <button id="btnToggleHDR">Toggle HDR</button>
+      </div>
+      <div class="help">W/A/S/D: Move • Mouse: Look • Space: Dash</div>
+    </div>
+
+    <!-- Babylon.js CDN -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+
+    <!-- Game code -->
+    <script src="./src/main.js"></script>
+  </body>
+</html>
