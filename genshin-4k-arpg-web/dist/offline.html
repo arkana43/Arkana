@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>4K ARPG Demo (Offline Single File)</title>
+    <style>
+html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; color: #e6e6e6; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, 'Helvetica Neue', Arial, 'Apple Color Emoji', 'Segoe UI Emoji'; }
+#renderCanvas { width: 100%; height: 100%; touch-action: none; display: block; }
+.hud { position: fixed; top: 12px; left: 12px; right: 12px; display: flex; align-items: center; gap: 16px; z-index: 10; pointer-events: none; }
+.hud .logo { font-weight: 800; letter-spacing: 0.08em; background: linear-gradient(90deg, #fff, #89c9ff, #ffd08a); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.hud .stats { opacity: 0.9; }
+.hud .controls { margin-left: auto; display: flex; gap: 8px; pointer-events: auto; }
+.bars { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; z-index: 11; }
+.bar { width: 260px; height: 10px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 999px; overflow: hidden; }
+.bar .fill { height: 100%; width: 100%; transform-origin: left center; }
+.bar.stamina .fill { background: linear-gradient(90deg, #84fab0, #8fd3f4); }
+.bar.energy .fill { background: linear-gradient(90deg, #fed6e3, #f093fb); }
+.lockon { font-size: 12px; opacity: 0.8; }
+.party { position: fixed; right: 14px; top: 80px; display: grid; gap: 8px; }
+.party-slot { width: 46px; height: 46px; border-radius: 10px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); display: grid; place-items: center; user-select: none; }
+.party-slot.active { outline: 2px solid #89c9ff; }
+.skills { position: fixed; left: 14px; bottom: 16px; display: flex; gap: 8px; }
+.skill { min-width: 48px; height: 48px; border-radius: 10px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); display: grid; place-items: center; color: #e6e6e6; }
+.skill[disabled] { opacity: 0.5; }
+.hud .help, .help { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.35); padding: 6px 10px; border-radius: 8px; font-size: 12px; backdrop-filter: blur(6px); }
+button { background: rgba(255,255,255,0.08); color: #e6e6e6; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 8px 12px; cursor: pointer; }
+button:hover { background: rgba(255,255,255,0.16); }
+button:active { transform: translateY(1px); }
+    </style>
+  </head>
+  <body>
+    <canvas id="renderCanvas"></canvas>
+
+    <div class="hud">
+      <div class="logo">ARPG 4K</div>
+      <div class="stats"><span id="fps">0</span> FPS | <span id="resLabel">-</span></div>
+      <div class="controls">
+        <button id="btnMax">Max Settings</button>
+        <button id="btnBalanced">Balanced</button>
+        <button id="btnPerformance">Performance</button>
+        <button id="btnToggleHDR">Toggle HDR</button>
+      </div>
+    </div>
+
+    <div class="bars">
+      <div class="bar stamina"><div id="staminaFill" class="fill"></div></div>
+      <div class="bar energy"><div id="energyFill" class="fill"></div></div>
+      <div class="lockon">Lock: <span id="lockLabel">None</span></div>
+    </div>
+
+    <div class="party">
+      <div class="party-slot" data-index="0">1</div>
+      <div class="party-slot" data-index="1">2</div>
+      <div class="party-slot" data-index="2">3</div>
+      <div class="party-slot" data-index="3">4</div>
+    </div>
+
+    <div class="skills">
+      <div class="skill" title="Normal Attack (LMB)">LMB</div>
+      <button id="btnSkillE" class="skill" title="Elemental Skill (E)">E <span id="cdE">0</span></button>
+      <button id="btnBurstQ" class="skill" title="Elemental Burst (Q)">Q <span id="cdQ">0</span></button>
+    </div>
+
+    <div class="help">W/A/S/D: Move • Shift: Sprint • Mouse: Look • LMB: Attack • E: Skill • Q: Burst • Space: Jump/Dash • Tab: Lock‑on • 1‑4: Switch</div>
+
+    <!-- Inlined Babylon.js core -->
+    <script>
+// babylon.js
+</script>
+
+    <!-- Inlined Babylon.js extras -->
+    <script>
+// babylonjs.materials.min.js
+</script>
+    <script>
+// babylonjs.loaders.min.js
+</script>
+    <script>
+// babylon.gui.min.js
+</script>
+
+    <!-- Inlined game code (from main.js) -->
+    <script>
+// main.js
+</script>
+  </body>
+</html>
